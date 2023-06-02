@@ -10,6 +10,7 @@ class Board
   end
 
   def draw_board
+    puts "\e[H\e[2J"
     board = " #{spaces[0]} | #{spaces[1]} | #{spaces[2]} ",
             '---+---+---',
             " #{spaces[3]} | #{spaces[4]} | #{spaces[5]} ",
@@ -32,7 +33,6 @@ class Player
   def place_symb(selected_space)
     board.spaces[selected_space - 1] = symb
     played_positions.push(selected_space)
-    board.draw_board
   end
 end
 
@@ -47,6 +47,19 @@ class HumanPlayer < Player
       puts "#{selected_space} is not a valid or available space, please choose a valid or available space:"
     end
     place_symb(selected_space.to_i)
+    board.draw_board
+  end
+end
+
+class ComputerPlayer < Player
+  def play_turn
+    selected_space = ''
+    loop do
+      selected_space = board.spaces.sample
+      break unless board.spaces[selected_space - 1] == "x" || board.spaces[selected_space - 1] == "o"
+    end
+    place_symb(selected_space)
+    board.draw_board
   end
 end
 
@@ -54,4 +67,9 @@ board = Board.new
 board.draw_board
 
 human = HumanPlayer.new('x', board)
-human.play_turn
+computer = ComputerPlayer.new('o', board)
+
+3.times {
+  human.play_turn
+  computer.play_turn
+}
