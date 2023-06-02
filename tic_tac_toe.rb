@@ -35,6 +35,14 @@ end
 
 class Player
   @@total_turns = 0
+  def self.total_turns
+    @@total_turns
+  end
+
+  def self.tie
+    puts "It's a tie!"
+    exit
+  end
 
   attr_accessor :played_positions
   attr_reader :symb, :board
@@ -53,12 +61,6 @@ class Player
 
   def check_win
     board.win_conditions.map { |win_condition| (win_condition & played_positions).length == 3 }.include? true
-    tie if @@total_turns == 9
-  end
-
-  def tie
-    puts "It's a tie!"
-    exit
   end
 end
 
@@ -109,6 +111,7 @@ def play_game
   loop do
     human.play_turn
     human.check_win and human.win
+    Player.tie if Player.total_turns == 9
     computer.play_turn
     computer.check_win and computer.win
   end
