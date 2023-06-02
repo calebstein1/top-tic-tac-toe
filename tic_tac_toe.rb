@@ -21,32 +21,37 @@ end
 
 class Player
   attr_accessor :played_positions
-  attr_reader :symb
+  attr_reader :symb, :board
 
-  def initialize(symb)
+  def initialize(symb, board)
     @played_positions = []
     @symb = symb
+    @board = board
+  end
+
+  def place_symb(selected_space)
+    board.spaces[selected_space - 1] = symb
+    played_positions.push(selected_space)
+    board.draw_board
   end
 end
 
 class HumanPlayer < Player
   def play_turn
+    selected_space = ''
     puts 'Choose an available space:'
     loop do
       selected_space = gets.chomp
-      #break if board.open_spaces.include?(selected_space)
+      break if board.spaces[selected_space.to_i - 1] == selected_space.to_i
 
       puts "#{selected_space} is not a valid or available space, please choose a valid or available space:"
     end
+    place_symb(selected_space.to_i)
   end
 end
 
 board = Board.new
-
 board.draw_board
 
-binding.pry
-
-human = HumanPlayer.new('x')
-
+human = HumanPlayer.new('x', board)
 human.play_turn
