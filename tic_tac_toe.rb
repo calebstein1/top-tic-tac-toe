@@ -3,10 +3,23 @@
 require 'pry-byebug'
 
 class Board
+  WIN_CONDITIONS = [[1, 2, 3],
+                    [4, 5, 6],
+                    [7, 8, 9],
+                    [1, 4, 7],
+                    [2, 5, 8],
+                    [3, 6, 9],
+                    [1, 5, 9],
+                    [3, 5, 7]]
+
   attr_reader :spaces
 
   def initialize
     @spaces = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  end
+
+  def win_conditions
+    WIN_CONDITIONS
   end
 
   def draw_board
@@ -21,6 +34,8 @@ class Board
 end
 
 class Player
+  @@total_turns = 0
+
   attr_accessor :played_positions
   attr_reader :symb, :board
 
@@ -33,6 +48,17 @@ class Player
   def place_symb(selected_space)
     board.spaces[selected_space - 1] = symb
     played_positions.push(selected_space)
+    @@total_turns += 1
+  end
+
+  def check_win
+    board.win_conditions.map { |win_condition| (win_condition & played_positions).length == 3 }.include? true
+    tie if @@total_turns == 9
+  end
+
+  def tie
+    puts "It's a tie!"
+    exit
   end
 end
 
@@ -49,6 +75,11 @@ class HumanPlayer < Player
     place_symb(selected_space.to_i)
     board.draw_board
   end
+
+  def win
+    puts 'You won!'
+    exit
+  end
 end
 
 class ComputerPlayer < Player
@@ -56,20 +87,31 @@ class ComputerPlayer < Player
     selected_space = ''
     loop do
       selected_space = board.spaces.sample
-      break unless board.spaces[selected_space - 1] == "x" || board.spaces[selected_space - 1] == "o"
+      break unless selected_space.is_a? String
     end
     place_symb(selected_space)
     board.draw_board
   end
+
+  def win
+    puts 'The computer won!'
+    exit
+  end
 end
 
-board = Board.new
-board.draw_board
+def play_game
+  board = Board.new
+  board.draw_board
 
-human = HumanPlayer.new('x', board)
-computer = ComputerPlayer.new('o', board)
+  human = HumanPlayer.new('x', board)
+  computer = ComputerPlayer.new('o', board)
 
-3.times {
-  human.play_turn
-  computer.play_turn
-}
+  loop do
+    human.play_turn
+    human.check_win and human.win
+    computer.play_turn
+    computer.check_win and computer.win
+  end
+end
+
+play_game
