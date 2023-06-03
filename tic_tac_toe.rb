@@ -96,25 +96,13 @@ class ComputerPlayer < Player
   end
 end
 
-def choose_player1(board)
-  puts 'Player 1 (h)uman or (c)omputer?'
+def choose_player(name, symb, board)
+  puts "#{name} (h)uman or (c)omputer?"
   loop do
-    p1_choice = gets.chomp
-    case p1_choice
-    when 'h' then return HumanPlayer.new('X', board)
-    when 'c' then return ComputerPlayer.new('X', board)
-    else puts 'Invalid option, please choose (h)uman or (c)omputer'
-    end
-  end
-end
-
-def choose_player2(board)
-  puts 'Player 2 (h)uman or (c)omputer'
-  loop do
-    p2_choice = gets.chomp
-    case p2_choice
-    when 'h' then return HumanPlayer.new('O', board)
-    when 'c' then return ComputerPlayer.new('O', board)
+    p_choice = gets.chomp
+    case p_choice
+    when 'h' then return HumanPlayer.new(symb, board)
+    when 'c' then return ComputerPlayer.new(symb, board)
     else puts 'Invalid option, please choose (h)uman or (c)omputer'
     end
   end
@@ -124,8 +112,8 @@ def play_game
   board = Board.new
   board.draw_board
 
-  player1 = choose_player1(board)
-  player2 = choose_player2(board)
+  player1 = choose_player('Player 1', 'X', board)
+  player2 = choose_player('Player 2', 'O', board)
 
   loop do
     player1.play_turn
