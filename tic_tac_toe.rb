@@ -62,6 +62,11 @@ class Player
   def check_win
     board.win_conditions.map { |win_condition| (win_condition & played_positions).length == 3 }.include? true
   end
+
+  def win
+    puts "#{symb} wins!"
+    exit
+  end
 end
 
 class HumanPlayer < Player
@@ -77,11 +82,6 @@ class HumanPlayer < Player
     place_symb(selected_space.to_i)
     board.draw_board
   end
-
-  def win
-    puts 'You won!'
-    exit
-  end
 end
 
 class ComputerPlayer < Player
@@ -94,10 +94,29 @@ class ComputerPlayer < Player
     place_symb(selected_space)
     board.draw_board
   end
+end
 
-  def win
-    puts 'The computer won!'
-    exit
+def choose_player1(board)
+  puts 'Player 1 (h)uman or (c)omputer?'
+  loop do
+    p1_choice = gets.chomp
+    case p1_choice
+    when 'h' then return HumanPlayer.new('X', board)
+    when 'c' then return ComputerPlayer.new('X', board)
+    else puts 'Invalid option, please choose (h)uman or (c)omputer'
+    end
+  end
+end
+
+def choose_player2(board)
+  puts 'Player 2 (h)uman or (c)omputer'
+  loop do
+    p2_choice = gets.chomp
+    case p2_choice
+    when 'h' then return HumanPlayer.new('O', board)
+    when 'c' then return ComputerPlayer.new('O', board)
+    else puts 'Invalid option, please choose (h)uman or (c)omputer'
+    end
   end
 end
 
@@ -105,15 +124,15 @@ def play_game
   board = Board.new
   board.draw_board
 
-  human = HumanPlayer.new('x', board)
-  computer = ComputerPlayer.new('o', board)
+  player1 = choose_player1(board)
+  player2 = choose_player2(board)
 
   loop do
-    human.play_turn
-    human.check_win and human.win
+    player1.play_turn
+    player1.check_win and player1.win
     Player.tie if Player.total_turns == 9
-    computer.play_turn
-    computer.check_win and computer.win
+    player2.play_turn
+    player2.check_win and player2.win
   end
 end
 
